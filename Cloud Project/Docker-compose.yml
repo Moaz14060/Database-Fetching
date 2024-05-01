@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  db: 
+    image: mysql:latest
+    environment:
+      - MYSQL_DATABASE=php_docker
+      - MYSQL_USER=php_docker
+      - MYSQL_PASSWORD=password
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    volumes:
+      - "./db:/docker-entrypoint-initdb.d"
+
+  www:
+    image: project
+    volumes:
+      - "./:/var/www/html"
+    ports:
+      - "8080:80" # Map port 8080 on host to port 80 in container
+      - "443:443" # SSL traffic
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8001:80" # Map port 8001 on host to port 80 in container
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306 # MySQL port inside the container
+    command: ["apache2-foreground"] # Explicitly specify the command to run Apache
